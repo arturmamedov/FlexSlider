@@ -3,6 +3,83 @@
 # FlexSlider 2.6.4
 http://www.woocommerce.com/flexslider/ - Copyright (c) 2015 WooThemes
 
+## Install
+
+```
+bower install flexslider [--save]
+```
+
+## Example of code that i use (HTML & JS)
+for slider with linked thumbnails and centered horizontally after load, for images that have different height
+instead of add images manually i have a `PHP` loop, replace it with your images
+##### Configuration
+- `<li style="height: 500px;">` the height of slider
+- `style="max-height: 500px;"` on slide <img>
+- `width="100"` on thumbnail <img> for size & JS itemWidth: 104, // + 2px for border (better cut your thumbnail to 100x100)
+
+```html
+<!-- SLIDER -->
+<div>
+    <div id="slider" class="row flexslider">
+        <ul class="slides" itemscope itemtype="http://schema.org/ImageObject">
+            <?php foreach ($images as $image): ?>
+                <li style="height: 500px;">
+                    <a class="images" href="<?php echo $image->path_string; ?>" title="Immagine">
+                        <img src="<?php echo $image->path_string; ?>" style="max-height: 500px;" itemprop="contentUrl"/>
+                    </a>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+    <div id="carousel" class="flexslider">
+        <ul class="slides">
+            <?php foreach ($images as $image): ?>
+                <li class="thumbnail">
+                    <img src="<?php echo $image->path_string; ?>" width="100"/>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+</div><!-- /SLIDER -->
+
+
+<link rel="stylesheet" href="/bower_components/flexslider/flexslider.css" type="text/css" media="all"/>
+<script src="/bower_components/flexslider/jquery.flexslider-min.js" type="text/javascript"></script>
+<script>
+    $(window).on("load", function () {
+        // The slider being synced must be initialized first
+        jQuery('#carousel').flexslider({
+            animation: "slide",
+            controlNav: false,
+            animationLoop: true,
+            slideshow: true,
+            itemWidth: 104, // + 2px for border
+            //itemMargin: 5, // or set it from css
+            asNavFor: '#slider'
+        });
+        jQuery('#slider').flexslider({
+            animation: "slide",
+            controlNav: false,
+            animationLoop: true,
+            slideshow: true,
+            sync: "#carousel",
+            start: function () {
+                // after images are loaded , position vertical center!
+                jQuery('.slides li', "#slider").each(function () {
+                    var height = jQuery(this).height();
+                    var imageHeight = jQuery(this).find('img').height();
+                    if (imageHeight > 0) {
+                        var offset = (height - imageHeight) / 2;
+
+                        jQuery(this).find('img').css('margin-top', offset + 'px');
+                    }
+                });
+            }
+        });
+    });
+</script>
+```
+
 ## Releases
 
 The `master` branch of this repository is always the latest development version of FlexSlider. Please view the [Releases](https://github.com/woocommerce/FlexSlider/releases) section for a list of official FlexSlider builds.
